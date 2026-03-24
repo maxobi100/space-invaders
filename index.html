@@ -93,6 +93,8 @@
         const BULLET_SPEED = 5;
 
         const FRUITS_VEGGIES = ['🍎', '🥦', '🥕', '🌽', '🍅', '🫐', '🍇', '🍐'];
+        const CATS_DOGS = ['🐱', '🐶', '🐈', '🐕', '🐯', '🐺', '🦊', '🦁'];
+        const ALL_TARGETS = [...FRUITS_VEGGIES, ...CATS_DOGS];
 
         // State Variables
         let score = 0;
@@ -119,7 +121,7 @@
                         x: c * (ALIEN_SIZE + ALIEN_SPACING) + 50,
                         y: r * (ALIEN_SIZE + ALIEN_SPACING) + 30,
                         alive: true,
-                        emoji: FRUITS_VEGGIES[Math.floor(Math.random() * FRUITS_VEGGIES.length)]
+                        emoji: ALL_TARGETS[Math.floor(Math.random() * ALL_TARGETS.length)]
                     });
                 }
             }
