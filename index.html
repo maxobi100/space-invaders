@@ -74,21 +74,25 @@
         const ALIEN_SPACING = 20;
         const BULLET_SPEED = 5;
 
-        // Game State
+        // State Variables
         let score = 0;
         let gameOver = false;
         let player = { x: canvas.width / 2 - PLAYER_WIDTH / 2, y: canvas.height - 40 };
         let bullets = [];
         let aliens = [];
+        let saucer = { x: -50, y: 20, active: false, speed: 2 };
         let alienDirection = 1;
         let alienMoveTimer = 0;
         let alienMoveInterval = 1000;
+        let saucerTimer = 0;
 
         // Keys
         const keys = {};
 
         function initAliens() {
             aliens = [];
+            saucer.active = false;
+            saucerTimer = 0;
             for (let r = 0; r < ALIEN_ROWS; r++) {
                 for (let c = 0; c < ALIEN_COLS; c++) {
                     aliens.push({
@@ -119,6 +123,16 @@
                     ctx.fillStyle = '#f00';
                 }
             });
+
+            // Draw Saucer
+            if (saucer.active) {
+                ctx.fillStyle = '#f0f'; // Purple saucer
+                ctx.beginPath();
+                ctx.ellipse(saucer.x + 15, saucer.y + 10, 20, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(saucer.x + 10, saucer.y + 2, 10, 5); // Cockpit
+            }
         }
 
         function drawBullets() {
@@ -142,7 +156,7 @@
             });
 
             // Alien Movement
-            alienMoveTimer += 16.67; // approx 60fps
+            alienMoveTimer += 16.67; 
             if (alienMoveTimer > alienMoveInterval) {
                 let changeDir = false;
                 aliens.forEach(alien => {
@@ -166,8 +180,33 @@
                 alienMoveTimer = 0;
             }
 
+            // Saucer Logic
+            saucerTimer += 16.67;
+            if (!saucer.active && saucerTimer > 10000) { // Every 10 seconds
+                saucer.active = true;
+                saucer.x = -50;
+                saucerTimer = 0;
+            }
+            if (saucer.active) {
+                saucer.x += saucer.speed;
+                if (saucer.x > canvas.width) {
+                    saucer.active = false;
+                }
+            }
+
             // Collision Detection
             bullets.forEach((bullet, bIndex) => {
+                // Check Saucer collision
+                if (saucer.active &&
+                    bullet.x > saucer.x && bullet.x < saucer.x + 30 &&
+                    bullet.y > saucer.y && bullet.y < saucer.y + 20) {
+                    saucer.active = false;
+                    bullets.splice(bIndex, 1);
+                    score += 100; // Big bonus
+                    scoreElement.innerText = `Score: ${score}`;
+                    playExplosionSound();
+                }
+
                 aliens.forEach((alien, aIndex) => {
                     if (alien.alive &&
                         bullet.x > alien.x && bullet.x < alien.x + ALIEN_SIZE &&
