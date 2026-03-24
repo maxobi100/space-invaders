@@ -12,14 +12,19 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 10px;
             font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            touch-action: manipulation;
         }
         canvas {
             border: 2px solid #555;
             background-color: #70c5ce;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            max-width: 100%;
+            height: auto;
         }
         #ui {
             margin-bottom: 10px;
