@@ -39,6 +39,28 @@
     <div class="controls">ARROWS to Move | SPACE to Shoot</div>
 
     <script>
+        // --- Sound Engine ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type, freq, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playShootSound() { playSound('triangle', 600, 0.1); }
+        function playExplosionSound() { playSound('sawtooth', 150, 0.3); }
+        function playGameOverSound() { playSound('square', 100, 1); }
+        // --------------------
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
@@ -137,6 +159,7 @@
                         alien.y += 20;
                         if (alien.y + ALIEN_SIZE >= player.y) {
                             gameOver = true;
+                            playGameOverSound();
                         }
                     });
                 }
@@ -153,6 +176,7 @@
                         bullets.splice(bIndex, 1);
                         score += 10;
                         scoreElement.innerText = `Score: ${score}`;
+                        playExplosionSound();
                         // Speed up if aliens killed
                         alienMoveInterval *= 0.98;
                     }
@@ -194,9 +218,11 @@
         }
 
         window.addEventListener('keydown', e => {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             keys[e.code] = true;
             if (e.code === 'Space' && !gameOver) {
                 bullets.push({ x: player.x + PLAYER_WIDTH / 2 - 1.5, y: player.y });
+                playShootSound();
             }
             if (gameOver) resetGame();
         });
