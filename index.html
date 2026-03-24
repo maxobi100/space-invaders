@@ -74,9 +74,11 @@
         const PLAYER_HEIGHT = 20;
         const ALIEN_ROWS = 4;
         const ALIEN_COLS = 8;
-        const ALIEN_SIZE = 20;
+        const ALIEN_SIZE = 24; // Slightly larger for emojis
         const ALIEN_SPACING = 20;
         const BULLET_SPEED = 5;
+
+        const FRUITS_VEGGIES = ['🍎', '🥦', '🥕', '🌽', '🍅', '🫐', '🍇', '🍐'];
 
         // State Variables
         let score = 0;
@@ -102,7 +104,8 @@
                     aliens.push({
                         x: c * (ALIEN_SIZE + ALIEN_SPACING) + 50,
                         y: r * (ALIEN_SIZE + ALIEN_SPACING) + 30,
-                        alive: true
+                        alive: true,
+                        emoji: FRUITS_VEGGIES[Math.floor(Math.random() * FRUITS_VEGGIES.length)]
                     });
                 }
             }
@@ -116,26 +119,17 @@
         }
 
         function drawAliens() {
-            ctx.fillStyle = '#f00';
             aliens.forEach(alien => {
                 if (alien.alive) {
-                    ctx.fillRect(alien.x, alien.y, ALIEN_SIZE, ALIEN_SIZE);
-                    // Alien eyes
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(alien.x + 4, alien.y + 4, 3, 3);
-                    ctx.fillRect(alien.x + 13, alien.y + 4, 3, 3);
-                    ctx.fillStyle = '#f00';
+                    ctx.font = `${ALIEN_SIZE}px serif`;
+                    ctx.fillText(alien.emoji, alien.x, alien.y + ALIEN_SIZE);
                 }
             });
 
             // Draw Saucer
             if (saucer.active) {
-                ctx.fillStyle = '#f0f'; // Purple saucer
-                ctx.beginPath();
-                ctx.ellipse(saucer.x + 15, saucer.y + 10, 20, 8, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(saucer.x + 10, saucer.y + 2, 10, 5); // Cockpit
+                ctx.font = `30px serif`;
+                ctx.fillText('🛸', saucer.x, saucer.y + 25);
             }
         }
 
