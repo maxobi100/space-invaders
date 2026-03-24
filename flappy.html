@@ -161,7 +161,8 @@
             requestAnimationFrame(gameLoop);
         }
 
-        function handleInput() {
+        function handleInput(e) {
+            if (e) e.preventDefault();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             if (gameOver) {
                 reset();
@@ -171,7 +172,8 @@
             }
         }
 
-        window.addEventListener('keydown', e => { if (e.code === 'Space') handleInput(); });
+        window.addEventListener('keydown', e => { if (e.code === 'Space') handleInput(e); });
+        canvas.addEventListener('touchstart', handleInput, { passive: false });
         canvas.addEventListener('mousedown', handleInput);
 
         gameLoop();
